@@ -1,17 +1,28 @@
-// App.jsx
 import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
-import Dashboard from "./pages/Dashboard";
-import LoginPage from "./pages/Login";
-import { useSelector } from "react-redux";
+import { Routes, Route } from "react-router-dom";
+import ForgotFlow from "./pages/ForgotFlow.jsx";
+import Dashboard from "./pages/Dashboard.jsx";
+import PrivateRouter from "./guard/PrivateRouter.jsx";
+import ErrorPage from "./pages/ErrorPage.jsx";
 
 const App = () => {
-  const user = useSelector((state) => state.user.user);
-
   return (
     <Routes>
-      <Route path="/" element={user ? <Dashboard /> : <Navigate to="/login" />} />
-      <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/" />} />
+      {/* Dashboard faqat PrivateRouter ichida ishlaydi */}
+      <Route
+        path="/dashboard"
+        element={
+          <PrivateRouter>
+            <Dashboard />
+          </PrivateRouter>
+        }
+      />
+
+      {/* Forgot password */}
+      <Route path="/forgot" element={<ForgotFlow />} />
+
+      {/* Default / Not Found */}
+      <Route path="*" element={<ForgotFlow />} />
     </Routes>
   );
 };

@@ -1,4 +1,3 @@
-// src/pages/Dashboard.jsx
 import React, { useState } from "react";
 import Sidebar from "../components/layout/Sidebar";
 import Navbar from "../components/layout/Navbar";
@@ -7,8 +6,6 @@ import { TrendingUp, TrendingDown, Users, BarChart3, DollarSign, Folder } from "
 export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState("dashboard");
-
-  // Misol uchun user email
   const userEmail = "user@example.com";
 
   const stats = [
@@ -20,7 +17,6 @@ export default function Dashboard() {
 
   return (
     <div className="flex h-screen bg-[#0f172a] text-gray-100">
-      {/* Sidebar */}
       <Sidebar
         sidebarOpen={sidebarOpen}
         setSidebarOpen={setSidebarOpen}
@@ -28,14 +24,11 @@ export default function Dashboard() {
         setActiveTab={setActiveTab}
       />
 
-      {/* Main */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Navbar */}
         <Navbar userEmail={userEmail} />
 
         <main className="flex-1 overflow-y-auto p-6 bg-[#0f172a]">
           <div className="max-w-7xl mx-auto space-y-6">
-            {/* Stats Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {stats.map((stat, i) => {
                 const Icon = stat.icon;
@@ -59,11 +52,7 @@ export default function Dashboard() {
                       ) : (
                         <TrendingDown size={16} className="text-red-500" />
                       )}
-                      <p
-                        className={`text-sm font-semibold ${
-                          stat.positive ? "text-green-500" : "text-red-500"
-                        }`}
-                      >
+                      <p className={`text-sm font-semibold ${stat.positive ? "text-green-500" : "text-red-500"}`}>
                         {stat.change}
                       </p>
                       <span className="text-sm text-gray-400">vs last month</span>
@@ -73,7 +62,6 @@ export default function Dashboard() {
               })}
             </div>
 
-            {/* Chart Placeholder */}
             <div className="bg-[#1e293b] border border-gray-700 rounded-2xl p-8 text-center">
               <p className="text-gray-400 text-sm">📊 Chart component will appear here</p>
             </div>

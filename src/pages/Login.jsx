@@ -1,43 +1,57 @@
-// src/pages/Login.jsx
 import React, { useState } from "react";
-import { Lock, Mail, ShoppingCart, Eye, EyeOff } from "lucide-react";
+import { Lock, Phone, ShoppingCart, User, Eye, EyeOff } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { login } from "../redux/slices/userSlice";
 import { Link, useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 
 const LoginPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const [telegram, setTelegram] = useState("");
+  const [phone, setPhone] = useState("");
+  const [showPhone, setShowPhone] = useState(false);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  // 🔹 Static foydalanuvchi (test uchun)
+  const staticUser = {
+    telegram: "@developerBhk",
+    phone: "+998901234567",
+    name: "Admin",
+  };
+
   const handleLogin = () => {
-    if (!email || !password) {
-      toast.error("Iltimos, barcha maydonlarni to‘ldiring!");
+    toast.dismiss();
+
+    if (!telegram || !phone) {
+      toast.error("Iltimos, barcha maydonlarni to‘ldiring!", { duration: 2000 });
       return;
     }
 
     setLoading(true);
+    toast.loading("Kirish amalga oshirilmoqda...", { duration: 1500 });
+
     setTimeout(() => {
-      const fakeUser = { name: "Admin", email };
-      const fakeToken = "secureToken12345";
-
-      dispatch(login({ user: fakeUser, token: fakeToken }));
-
-      // Toast success xabari
-      toast.success("Tizimga muvaffaqiyatli kirdingiz!");
-
-      navigate("/"); // Main page yoki dashboard
       setLoading(false);
+      toast.dismiss();
+
+      // 🔹 Tekshirish
+      if (telegram === staticUser.telegram && phone === staticUser.phone) {
+        const fakeToken = "secureToken12345";
+        dispatch(login({ user: staticUser, token: fakeToken }));
+        toast.success("Tizimga muvaffaqiyatli kirdingiz!", { duration: 2000 });
+        navigate("/dashboard");
+      } else {
+        toast.error("Telegram username yoki telefon raqam noto‘g‘ri!", {
+          duration: 2000,
+        });
+      }
     }, 1000);
   };
 
   return (
     <div className="flex h-screen bg-base-200">
-      {/* Toast container */}
+      {/* Toast */}
       <Toaster position="top-center" reverseOrder={false} />
 
       {/* Chap tomon - illustration */}
@@ -49,7 +63,7 @@ const LoginPage = () => {
           <ShoppingCart className="w-24 h-24 mb-6 animate-bounce" />
           <h1 className="text-4xl font-bold mb-4">Admin Panel</h1>
           <p className="text-base max-w-md opacity-90">
-            Mahsulotlaringizni boshqaring, buyurtmalarni ko‘rib chiqing va biznesingizni samarali yuriting.
+            Mahsulotlaringizni boshqaring, buyurtmalarni kuzating va biznesingizni samarali yuriting.
           </p>
 
           <div className="mt-10 grid grid-cols-3 gap-4 max-w-md w-full">
@@ -69,7 +83,7 @@ const LoginPage = () => {
         </div>
       </div>
 
-      {/* O'ng tomon - Login form */}
+      {/* O‘ng tomon - Login form */}
       <div className="flex items-center justify-center w-full lg:w-1/2 p-6">
         <div className="card w-full max-w-md bg-base-100 shadow-xl">
           <div className="card-body">
@@ -79,47 +93,47 @@ const LoginPage = () => {
               </div>
               <h2 className="text-3xl font-bold">Xush kelibsiz!</h2>
               <p className="text-base-content/70">
-                Admin panelga kirish uchun login ma’lumotlaringizni kiriting.
+                Telegram username va telefon raqamingiz bilan tizimga kiring.
               </p>
             </div>
 
-            {/* Email */}
+            {/* Telegram username */}
             <div className="form-control mb-4">
               <label className="label">
-                <span className="label-text font-medium">Email manzil</span>
+                <span className="label-text font-medium">Telegram username</span>
               </label>
               <label className="input input-bordered flex items-center gap-2 w-[400px]">
-                <Mail className="w-5 h-5 text-base-content/50" />
+                <User className="w-5 h-5 text-base-content/50" />
                 <input
-                  type="email"
+                  type="text"
                   className="grow"
-                  placeholder="admin@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="@developerBhk"
+                  value={telegram}
+                  onChange={(e) => setTelegram(e.target.value)}
                 />
               </label>
             </div>
 
-            {/* Parol */}
+            {/* Telefon raqam */}
             <div className="form-control mb-2">
               <label className="label">
-                <span className="label-text font-medium">Parol</span>
+                <span className="label-text font-medium">Telefon raqam</span>
               </label>
               <label className="input input-bordered flex items-center gap-2 w-[400px]">
-                <Lock className="w-5 h-5 text-base-content/50" />
+                <Phone className="w-5 h-5 text-base-content/50" />
                 <input
-                  type={showPassword ? "text" : "password"}
+                  type={showPhone ? "text" : "password"}
                   className="grow bg-transparent outline-none"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="+998901234567"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
                 />
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
+                  onClick={() => setShowPhone(!showPhone)}
                   className="text-gray-500 hover:text-gray-700 transition"
                 >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  {showPhone ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </label>
             </div>

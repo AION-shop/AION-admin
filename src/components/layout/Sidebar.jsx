@@ -24,7 +24,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, activeTab, setAct
     ];
 
     const handleLogout = () => {
-        toast.success("Siz tizimdan chiqdingiz!", { duration: 1000 });
+        // toast.success("Siz tizimdan chiqdingiz!", { duration: 1000 });
         setTimeout(() => {
             navigate("/login");
         }, 1);

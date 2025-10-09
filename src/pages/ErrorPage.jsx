@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { AlertTriangle } from "lucide-react";
+import LoginPage from "./Login";
 
 const ErrorPage = () => {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ const ErrorPage = () => {
         </p>
 
         <button
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/login")}
           className="btn btn-primary w-full"
         >
           ⬅️ Back to Home
