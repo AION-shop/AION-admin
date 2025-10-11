@@ -1,29 +1,23 @@
 import React, { useState } from "react";
-import { Lock, Phone, ShoppingCart, User, Eye, EyeOff } from "lucide-react";
+import { Lock, User, Eye, EyeOff, ShoppingCart } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { login } from "../redux/slices/userSlice";
 import { Link, useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
+import axios from "axios";
 
 const LoginPage = () => {
   const [telegram, setTelegram] = useState("");
-  const [phone, setPhone] = useState("");
-  const [showPhone, setShowPhone] = useState(false);
+  const [password, setPassword] = useState("");
+  const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // 🔹 Static foydalanuvchi (test uchun)
-  const staticUser = {
-    telegram: "@developerBhk",
-    phone: "+998901234567",
-    name: "Admin",
-  };
-
-  const handleLogin = () => {
+  const handleLogin = async () => {
     toast.dismiss();
 
-    if (!telegram || !phone) {
+    if (!telegram || !password) {
       toast.error("Iltimos, barcha maydonlarni to‘ldiring!", { duration: 2000 });
       return;
     }
@@ -31,30 +25,40 @@ const LoginPage = () => {
     setLoading(true);
     toast.loading("Kirish amalga oshirilmoqda...", { duration: 1500 });
 
-    setTimeout(() => {
+    try {
+      const res = await axios.post("http://localhost:5000/api/auth/login", {
+        telegram,
+        password,
+      });
+
       setLoading(false);
       toast.dismiss();
 
-      // 🔹 Tekshirish
-      if (telegram === staticUser.telegram && phone === staticUser.phone) {
-        const fakeToken = "secureToken12345";
-        dispatch(login({ user: staticUser, token: fakeToken }));
+      if (res.data.success) {
+        dispatch(
+          login({
+            user: res.data.user,
+            token: res.data.token,
+          })
+        );
         toast.success("Tizimga muvaffaqiyatli kirdingiz!", { duration: 2000 });
         navigate("/dashboard");
       } else {
-        toast.error("Telegram username yoki telefon raqam noto‘g‘ri!", {
-          duration: 2000,
-        });
+        toast.error(res.data.message || "Kirishda xatolik!", { duration: 2000 });
       }
-    }, 1000);
+    } catch (err) {
+      console.error(err);
+      setLoading(false);
+      toast.dismiss();
+      toast.error("Server bilan aloqa yo‘q!", { duration: 2000 });
+    }
   };
 
   return (
     <div className="flex h-screen bg-base-200">
-      {/* Toast */}
       <Toaster position="top-center" reverseOrder={false} />
 
-      {/* Chap tomon - illustration */}
+      {/* Chap tomon */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary to-secondary text-white items-center justify-center relative overflow-hidden">
         <div className="absolute top-0 left-0 w-80 h-80 bg-white/10 rounded-full -translate-x-24 -translate-y-24"></div>
         <div className="absolute bottom-0 right-0 w-72 h-72 bg-white/10 rounded-full translate-x-20 translate-y-20"></div>
@@ -65,25 +69,10 @@ const LoginPage = () => {
           <p className="text-base max-w-md opacity-90">
             Mahsulotlaringizni boshqaring, buyurtmalarni kuzating va biznesingizni samarali yuriting.
           </p>
-
-          <div className="mt-10 grid grid-cols-3 gap-4 max-w-md w-full">
-            <div className="bg-base-100 glass backdrop-blur-md rounded-2xl p-4">
-              <h3 className="text-2xl font-bold">500+</h3>
-              <p className="text-sm opacity-80">Mahsulotlar</p>
-            </div>
-            <div className="bg-base-100 glass backdrop-blur-md rounded-2xl p-4">
-              <h3 className="text-2xl font-bold">1.2K</h3>
-              <p className="text-sm opacity-80">Buyurtmalar</p>
-            </div>
-            <div className="bg-base-100 glass backdrop-blur-md rounded-2xl p-4">
-              <h3 className="text-2xl font-bold">98%</h3>
-              <p className="text-sm opacity-80">Mamnun mijozlar</p>
-            </div>
-          </div>
         </div>
       </div>
 
-      {/* O‘ng tomon - Login form */}
+      {/* O‘ng tomon */}
       <div className="flex items-center justify-center w-full lg:w-1/2 p-6">
         <div className="card w-full max-w-md bg-base-100 shadow-xl">
           <div className="card-body">
@@ -93,7 +82,7 @@ const LoginPage = () => {
               </div>
               <h2 className="text-3xl font-bold">Xush kelibsiz!</h2>
               <p className="text-base-content/70">
-                Telegram username va telefon raqamingiz bilan tizimga kiring.
+                Telegram username va parolingiz bilan tizimga kiring.
               </p>
             </div>
 
@@ -114,26 +103,26 @@ const LoginPage = () => {
               </label>
             </div>
 
-            {/* Telefon raqam */}
+            {/* Parol */}
             <div className="form-control mb-2">
               <label className="label">
-                <span className="label-text font-medium">Telefon raqam</span>
+                <span className="label-text font-medium">Parol</span>
               </label>
               <label className="input input-bordered flex items-center gap-2 w-[400px]">
-                <Phone className="w-5 h-5 text-base-content/50" />
+                <Lock className="w-5 h-5 text-base-content/50" />
                 <input
-                  type={showPhone ? "text" : "password"}
+                  type={showPass ? "text" : "password"}
                   className="grow bg-transparent outline-none"
-                  placeholder="+998901234567"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="********"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
                 <button
                   type="button"
-                  onClick={() => setShowPhone(!showPhone)}
+                  onClick={() => setShowPass(!showPass)}
                   className="text-gray-500 hover:text-gray-700 transition"
                 >
-                  {showPhone ? <EyeOff size={20} /> : <Eye size={20} />}
+                  {showPass ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </label>
             </div>

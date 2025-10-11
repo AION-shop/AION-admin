@@ -1,50 +1,54 @@
-// src/pages/Register.jsx
 import React, { useState } from "react";
-import { Lock, Mail, User, Eye, EyeOff, ShoppingCart } from "lucide-react";
+import { Lock, User, Eye, EyeOff, ShoppingCart } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
+import axios from "axios";
 
 const RegisterPage = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [telegram, setTelegram] = useState("");
   const [password, setPassword] = useState("");
-  const [confirm, setConfirm] = useState("");
+  const [chatId, setChatId] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-
   const navigate = useNavigate();
 
-  const handleRegister = () => {
-    if (!name || !email || !password || !confirm) {
+  const handleRegister = async () => {
+    if (!telegram || !password || !chatId) {
       toast.error("Iltimos, barcha maydonlarni to‘ldiring!");
       return;
     }
-
-    if (password !== confirm) {
-      toast.error("Parollar mos emas!");
+    if (!telegram.startsWith("@")) {
+      toast.error("Telegram username '@' belgisi bilan boshlanishi kerak!");
       return;
     }
 
     setLoading(true);
+    try {
+      const res = await axios.post("http://localhost:5000/api/auth/register", {
+        telegram,
+        password,
+        chatId,
+      });
 
-    // Simulyatsiya - bazaga saqlash
-    setTimeout(() => {
-      const newUser = { name, email, password };
-      localStorage.setItem("registeredUser", JSON.stringify(newUser));
-
-      toast.success("Ro‘yxatdan o‘tish muvaffaqiyatli!");
+      if (res.data.success) {
+        toast.success(res.data.message || "Ro‘yxatdan o‘tish muvaffaqiyatli!");
+        setTimeout(() => navigate("/login"), 1500);
+      } else {
+        toast.error(res.data.message || "Xatolik yuz berdi!");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Server bilan bog‘lanishda xatolik!");
+    } finally {
       setLoading(false);
-
-      // Login sahifasiga yo‘naltirish
-      navigate("/login");
-    }, 1000);
+    }
   };
 
   return (
     <div className="flex h-screen bg-base-200">
       <Toaster position="top-center" reverseOrder={false} />
 
-      {/* Chap tomon - illustration */}
+      {/* Chap tomon */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary to-secondary text-white items-center justify-center relative overflow-hidden">
         <div className="absolute top-0 left-0 w-80 h-80 bg-white/10 rounded-full -translate-x-24 -translate-y-24"></div>
         <div className="absolute bottom-0 right-0 w-72 h-72 bg-white/10 rounded-full translate-x-20 translate-y-20"></div>
@@ -58,7 +62,7 @@ const RegisterPage = () => {
         </div>
       </div>
 
-      {/* O‘ng tomon - Register form */}
+      {/* O‘ng tomon */}
       <div className="flex items-center justify-center w-full lg:w-1/2 p-6">
         <div className="card w-full max-w-md bg-base-100 shadow-xl">
           <div className="card-body">
@@ -72,51 +76,77 @@ const RegisterPage = () => {
               </p>
             </div>
 
-            {/* Foydalanuvchi ismi */}
+            {/* Telegram username */}
             <div className="form-control mb-4">
               <label className="label">
-                <span className="label-text font-medium">Ism</span>
+                <span className="label-text font-medium">Telegram username</span>
               </label>
-              <label className="input input-bordered flex items-center gap-2 w-[400px]">
-                <User className="w-5 h-5 text-base-content/50" />
-                <input
-                  type="text"
-                  className="grow"
-                  placeholder="Ismingiz"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-              </label>
+              <input
+                type="text"
+                className="input input-bordered w-full"
+                placeholder="@developerBhk"
+                value={telegram}
+                onChange={(e) => setTelegram(e.target.value)}
+              />
             </div>
 
-            {/* Email */}
+            {/* Chat ID */}
+            {/* Chat ID */}
             <div className="form-control mb-4">
               <label className="label">
-                <span className="label-text font-medium">Email</span>
+                <span className="label-text font-medium">Telegram Chat ID</span>
               </label>
-              <label className="input input-bordered flex items-center gap-2 w-[400px]">
-                <Mail className="w-5 h-5 text-base-content/50" />
-                <input
-                  type="email"
-                  className="grow"
-                  placeholder="admin@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </label>
+
+              <input
+                type="text"
+                className="input input-bordered w-full"
+                placeholder="Masalan: 123456789"
+                value={chatId}
+                onChange={(e) => setChatId(e.target.value)}
+              />
+
+              <p className="text-xs text-gray-500 mt-1">
+                1️⃣ Chat ID olish uchun{" "}
+                <a
+                  href="https://t.me/CheckID_AIDbot"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline text-blue-500"
+                >
+                  botga kirib <strong>“Mening ID”</strong> tugmasini bosib, o‘z ID-ingizni oling
+                </a>.
+              </p>
+
+              <p className="text-xs text-gray-500 mt-1">
+                2️⃣ Keyin{" "}
+                <a
+                  href="https://t.me/FotgotPass_1_bot"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline text-blue-500"
+                >
+                  bu botga kirib <code>/start</code> yuboring
+                </a>, shunda sizga parol keladi.
+              </p>
+
+              <p className="text-xs text-gray-500 mt-1">
+                ✅ Olingan Chat ID ni yuqoridagi maydonga kiriting va ro‘yxatdan o‘ting.
+              </p>
             </div>
+
+
 
             {/* Parol */}
             <div className="form-control mb-4">
               <label className="label">
                 <span className="label-text font-medium">Parol</span>
               </label>
-              <label className="input input-bordered flex items-center gap-2 w-[400px]">
+              <div className="input input-bordered flex items-center gap-2 w-full">
                 <Lock className="w-5 h-5 text-base-content/50" />
                 <input
                   type={showPassword ? "text" : "password"}
-                  className="grow"
-                  placeholder="••••••••"
+                  className="grow bg-transparent outline-none"
+                  placeholder="********"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
@@ -127,24 +157,7 @@ const RegisterPage = () => {
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
-              </label>
-            </div>
-
-            {/* Tasdiqlash paroli */}
-            <div className="form-control mb-2">
-              <label className="label">
-                <span className="label-text font-medium">Parolni tasdiqlang</span>
-              </label>
-              <label className="input input-bordered flex items-center gap-2 w-[400px]">
-                <Lock className="w-5 h-5 text-base-content/50" />
-                <input
-                  type={showPassword ? "text" : "password"}
-                  className="grow"
-                  placeholder="••••••••"
-                  value={confirm}
-                  onChange={(e) => setConfirm(e.target.value)}
-                />
-              </label>
+              </div>
             </div>
 
             <button
