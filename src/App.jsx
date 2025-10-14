@@ -1,28 +1,30 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import { Outlet } from 'react-router-dom'
-import Sidebar from './components/Sidebar'
-import Navbar from './components/Navbar'
+import React from "react";
+import { Routes, Route } from "react-router-dom";
+import ForgotFlow from "./pages/ForgotFlow.jsx";
+import Dashboard from "./pages/Dashboard.jsx";
+import PrivateRouter from "./guard/PrivateRouter.jsx";
+import ErrorPage from "./pages/ErrorPage.jsx";
 
-function App() {
-  const [count, setCount] = useState(0)
-
+const App = () => {
   return (
-    <div>
-      <Navbar />
-      <div className='flex min-h-screen bg-red-400'>
-        <div className='min-w-44 bg-green-400'>
-          <Sidebar />
-        </div>
+    <Routes>
+      {/* Dashboard faqat PrivateRouter ichida ishlaydi */}
+      <Route
+        path="/dashboard"
+        element={
+          <PrivateRouter>
+            <Dashboard />
+          </PrivateRouter>
+        }
+      />
 
-        <div className='flex-1 bg-violet-400'>
-          <Outlet />
-        </div>
-      </div>
-    </div>
-  )
-}
+      {/* Forgot password */}
+      <Route path="/forgot" element={<ForgotFlow />} />
 
-export default App
+      {/* Default / Not Found */}
+      <Route path="*" element={<ForgotFlow />} />
+    </Routes>
+  );
+};
+
+export default App;

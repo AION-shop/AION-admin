@@ -1,212 +1,183 @@
-import { useState } from "react";
-import { UserPlus, User, Mail, Lock } from "lucide-react";
-import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { Lock, User, Eye, EyeOff, ShoppingCart } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
+import axios from "axios";
 
 const RegisterPage = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
+  const [telegram, setTelegram] = useState("");
+  const [password, setPassword] = useState("");
+  const [chatId, setChatId] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate(); // ✅ React Router navigate
+  const navigate = useNavigate();
 
-
-  const handleRegister = () => {
-    // 🔍 Bo‘sh joylarni tekshirish
-    if (
-      !formData.name ||
-      !formData.email ||
-      !formData.password ||
-      !formData.confirmPassword
-    ) {
-      alert("Iltimos, barcha joylarni to‘ldiring!");
+  const handleRegister = async () => {
+    if (!telegram || !password || !chatId) {
+      toast.error("Iltimos, barcha maydonlarni to‘ldiring!");
       return;
     }
-
-    // 🔍 Parolni tekshirish
-    if (formData.password !== formData.confirmPassword) {
-      alert("Parollar mos kelmadi!");
+    if (!telegram.startsWith("@")) {
+      toast.error("Telegram username '@' belgisi bilan boshlanishi kerak!");
       return;
     }
 
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      alert("Ro‘yxatdan o‘tish muvaffaqiyatli!");
-      navigate("/login"); // ✅ avtomatik login sahifasiga yo‘naltiradi
-    }, 1500);
-  };
+    try {
+      const res = await axios.post("http://localhost:8000/api/auth/register", {
+        telegram,
+        password,
+        chatId,
+      });
 
-  const handleChange = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+      if (res.data.success) {
+        toast.success(res.data.message || "Ro‘yxatdan o‘tish muvaffaqiyatli!");
+        setTimeout(() => navigate("/login"), 1500);
+      } else {
+        toast.error(res.data.message || "Xatolik yuz berdi!");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Server bilan bog‘lanishda xatolik!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="flex h-screen bg-base-200">
+      <Toaster position="top-center" reverseOrder={false} />
+
       {/* Chap tomon */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-700 relative overflow-hidden">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.7 }}
-          animate={{ opacity: 0.1, scale: 1 }}
-          transition={{ duration: 2 }}
-          className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full -translate-x-32 -translate-y-32"
-        />
-        <motion.div
-          initial={{ opacity: 0, scale: 0.7 }}
-          animate={{ opacity: 0.1, scale: 1 }}
-          transition={{ duration: 2, delay: 0.3 }}
-          className="absolute bottom-0 right-0 w-80 h-80 bg-white rounded-full translate-x-32 translate-y-32"
-        />
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary to-secondary text-white items-center justify-center relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-80 h-80 bg-white/10 rounded-full -translate-x-24 -translate-y-24"></div>
+        <div className="absolute bottom-0 right-0 w-72 h-72 bg-white/10 rounded-full translate-x-20 translate-y-20"></div>
 
-        <div className="relative z-10 flex flex-col items-center justify-center w-full p-12 text-white text-center">
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: "spring", stiffness: 100, delay: 0.3 }}
-            className="mb-8"
-          >
-            <UserPlus className="w-32 h-32 drop-shadow-lg" strokeWidth={1.5} />
-          </motion.div>
-
-          <motion.h1
-            initial={{ y: -40, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6 }}
-            className="text-5xl font-extrabold mb-4 drop-shadow-md"
-          >
-            Qo'shiling!
-          </motion.h1>
-          <p className="text-xl text-emerald-100 max-w-md mb-8">
-            Admin hisobini yarating va platformani to'liq nazorat qilishni
-            boshlang
+        <div className="relative z-10 flex flex-col items-center text-center px-10">
+          <ShoppingCart className="w-24 h-24 mb-6 animate-bounce" />
+          <h1 className="text-4xl font-bold mb-4">Yangi hisob yarating</h1>
+          <p className="text-base max-w-md opacity-90">
+            Admin panelga kirish uchun yangi hisob oching va boshqaruvni boshlang.
           </p>
         </div>
       </div>
 
       {/* O‘ng tomon */}
-      <div className="flex items-center justify-center w-full lg:w-1/2 p-6 sm:p-12">
-        <motion.div
-          initial={{ y: 40, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.7 }}
-          className="w-full max-w-md bg-base-100 rounded-2xl shadow-lg p-8"
-        >
-          <div className="text-center mb-8">
-            <motion.div
-              whileHover={{ rotate: 360 }}
-              transition={{ duration: 0.8 }}
-              className="inline-flex items-center justify-center w-16 h-16 bg-success rounded-2xl mb-4 shadow-md"
-            >
-              <UserPlus className="w-8 h-8 text-white" />
-            </motion.div>
-            <h2 className="text-3xl font-bold text-base-content">
-              Ro'yhatdan o'tish
-            </h2>
-            <p className="text-base-content/60 mt-2">
-              Admin hisobini yaratish uchun ma’lumotlarni kiriting
-            </p>
-          </div>
+      <div className="flex items-center justify-center w-full lg:w-1/2 p-6">
+        <div className="card w-full max-w-md bg-base-100 shadow-xl">
+          <div className="card-body">
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-primary text-white rounded-2xl mb-3">
+                <User className="w-8 h-8" />
+              </div>
+              <h2 className="text-3xl font-bold">Ro‘yxatdan o‘tish</h2>
+              <p className="text-base-content/70">
+                Hisob yaratish uchun quyidagi ma’lumotlarni to‘ldiring.
+              </p>
+            </div>
 
-          <div className="space-y-4">
-            {/* Full Name */}
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                To'liq ism
+            {/* Telegram username */}
+            <div className="form-control mb-4">
+              <label className="label">
+                <span className="label-text font-medium">Telegram username</span>
               </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Ism Familiya"
-                  className="input input-bordered w-full pl-12 focus:ring-2 focus:ring-success"
-                  value={formData.name}
-                  onChange={(e) => handleChange("name", e.target.value)}
-                />
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-base-content/40" />
-              </div>
+              <input
+                type="text"
+                className="input input-bordered w-full"
+                placeholder="@developerBhk"
+                value={telegram}
+                onChange={(e) => setTelegram(e.target.value)}
+              />
             </div>
 
-            {/* Email */}
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Email manzil
+            {/* Chat ID */}
+            {/* Chat ID */}
+            <div className="form-control mb-4">
+              <label className="label">
+                <span className="label-text font-medium">Telegram Chat ID</span>
               </label>
-              <div className="relative">
-                <input
-                  type="email"
-                  placeholder="admin@example.com"
-                  className="input input-bordered w-full pl-12 focus:ring-2 focus:ring-success"
-                  value={formData.email}
-                  onChange={(e) => handleChange("email", e.target.value)}
-                />
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-base-content/40" />
-              </div>
+
+              <input
+                type="text"
+                className="input input-bordered w-full"
+                placeholder="Masalan: 123456789"
+                value={chatId}
+                onChange={(e) => setChatId(e.target.value)}
+              />
+
+              <p className="text-xs text-gray-500 mt-1">
+                1️⃣ Chat ID olish uchun{" "}
+                <a
+                  href="https://t.me/CheckID_AIDbot"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline text-blue-500"
+                >
+                  botga kirib <strong>“Mening ID”</strong> tugmasini bosib, o‘z ID-ingizni oling
+                </a>.
+              </p>
+
+              <p className="text-xs text-gray-500 mt-1">
+                2️⃣ Keyin{" "}
+                <a
+                  href="https://t.me/FotgotPass_1_bot"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline text-blue-500"
+                >
+                  bu botga kirib <code>/start</code> yuboring
+                </a>, shunda sizga parol keladi.
+              </p>
+
+              <p className="text-xs text-gray-500 mt-1">
+                ✅ Olingan Chat ID ni yuqoridagi maydonga kiriting va ro‘yxatdan o‘ting.
+              </p>
             </div>
 
-            {/* Password */}
-            <div>
-              <label className="block text-sm font-medium mb-2">Parol</label>
-              <div className="relative">
-                <input
-                  type="password"
-                  placeholder="••••••••"
-                  className="input input-bordered w-full pl-12 focus:ring-2 focus:ring-success"
-                  value={formData.password}
-                  onChange={(e) => handleChange("password", e.target.value)}
-                />
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-base-content/40" />
-              </div>
-            </div>
 
-            {/* Confirm Password */}
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Parolni tasdiqlang
+
+            {/* Parol */}
+            <div className="form-control mb-4">
+              <label className="label">
+                <span className="label-text font-medium">Parol</span>
               </label>
-              <div className="relative">
+              <div className="input input-bordered flex items-center gap-2 w-full">
+                <Lock className="w-5 h-5 text-base-content/50" />
                 <input
-                  type="password"
-                  placeholder="••••••••"
-                  className="input input-bordered w-full pl-12 focus:ring-2 focus:ring-success"
-                  value={formData.confirmPassword}
-                  onChange={(e) =>
-                    handleChange("confirmPassword", e.target.value)
-                  }
+                  type={showPassword ? "text" : "password"}
+                  className="grow bg-transparent outline-none"
+                  placeholder="********"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-base-content/40" />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="text-gray-500 hover:text-gray-700 transition"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
               </div>
             </div>
 
-            {/* Submit */}
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
+            <button
               onClick={handleRegister}
-              className="btn btn-success w-full shadow-md"
               disabled={loading}
+              className="btn btn-primary w-full mt-6"
             >
-              {loading ? (
-                <span className="loading loading-spinner"></span>
-              ) : (
-                "Ro‘yhatdan o‘tish"
-              )}
-            </motion.button>
-          </div>
+              {loading ? <span className="loading loading-spinner"></span> : "Ro‘yxatdan o‘tish"}
+            </button>
 
-          <div className="mt-6 text-center">
-            <p className="text-sm text-base-content/60">
-              Hisobingiz bormi?{" "}
-              <button
-                onClick={() => navigate("/login")}
-                className="text-primary font-medium hover:underline"
-              >
-                Kirish
-              </button>
-            </p>
+            <div className="text-center mt-6">
+              <p className="text-sm text-base-content/70">
+                Hisobingiz bormi?{" "}
+                <Link to="/login" className="text-primary hover:underline font-medium">
+                  Tizimga kirish
+                </Link>
+              </p>
+            </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </div>
   );
