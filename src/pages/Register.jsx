@@ -13,6 +13,7 @@ const RegisterPage = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate(); // ✅ React Router navigate
 
+
   const handleRegister = () => {
     // 🔍 Bo‘sh joylarni tekshirish
     if (
@@ -76,10 +77,10 @@ const RegisterPage = () => {
             transition={{ duration: 0.6 }}
             className="text-5xl font-extrabold mb-4 drop-shadow-md"
           >
-            Qo‘shiling!
+            Qo'shiling!
           </motion.h1>
           <p className="text-xl text-emerald-100 max-w-md mb-8">
-            Admin hisobini yarating va platformani to‘liq nazorat qilishni
+            Admin hisobini yarating va platformani to'liq nazorat qilishni
             boshlang
           </p>
         </div>
@@ -102,7 +103,7 @@ const RegisterPage = () => {
               <UserPlus className="w-8 h-8 text-white" />
             </motion.div>
             <h2 className="text-3xl font-bold text-base-content">
-              Ro‘yhatdan o‘tish
+              Ro'yhatdan o'tish
             </h2>
             <p className="text-base-content/60 mt-2">
               Admin hisobini yaratish uchun ma’lumotlarni kiriting
@@ -113,7 +114,7 @@ const RegisterPage = () => {
             {/* Full Name */}
             <div>
               <label className="block text-sm font-medium mb-2">
-                To‘liq ism
+                To'liq ism
               </label>
               <div className="relative">
                 <input

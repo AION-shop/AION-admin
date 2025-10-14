@@ -4,7 +4,8 @@ import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
 const PrivateRouter = ({ children }) => {
-    const user = useSelector(state => state.user?.isAuth)
+    // const user = useSelector(state => state.user?.isAuth)
+    const user = true
     const navigate = useNavigate()
 
 

@@ -144,14 +144,14 @@ const LoginPage = () => {
             <p className="text-sm text-base-content/60">
               Hisobingiz yo'qmi?{" "}
               <button
-                onClick={() => navigate("register")}
+                onClick={() => navigate("/register")}
                 className="text-primary font-medium hover:underline"
               >
                 Ro'yxatdan o'tish
               </button>
             </p>
             <button
-              onClick={() => navigate("register")}
+              onClick={() => navigate("/register")}
               className="text-primary font-medium hover:underline"
             >
               Ro'yxatdan o'tish
