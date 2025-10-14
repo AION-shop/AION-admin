@@ -1,22 +1,28 @@
-import React, { useState } from "react";
-import Sidebar from "../components/layout/Sidebar";
-import Navbar from "../components/layout/Navbar";
-import { TrendingUp, TrendingDown, Users, BarChart3, DollarSign, Folder } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Outlet, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
+import Sidebar from "../components/layouts/Sidebar";
+import Navbar from "../components/layouts/Navbar";
+import { Users, PlusSquare, Package, BarChart3 } from "lucide-react";
 
 export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState("dashboard");
-  const userEmail = "user@example.com";
+  const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
+  const user = useSelector((state) => state.user.user);
+  const userEmail = user?.telegram || "Guest";
 
-  const stats = [
-    { label: "Total Users", value: "2,543", change: "+12.5%", positive: true, icon: Users },
-    { label: "Revenue", value: "$45,231", change: "+8.2%", positive: true, icon: DollarSign },
-    { label: "Active Projects", value: "18", change: "-2.3%", positive: false, icon: Folder },
-    { label: "Growth", value: "94.5%", change: "+3.1%", positive: true, icon: BarChart3 },
-  ];
+  const location = useLocation();
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+
 
   return (
-    <div className="flex h-screen bg-[#0f172a] text-gray-100">
+    <div className="flex h-screen bg-base-100 text-base-content transition-colors duration-300">
       <Sidebar
         sidebarOpen={sidebarOpen}
         setSidebarOpen={setSidebarOpen}
@@ -25,48 +31,25 @@ export default function Dashboard() {
       />
 
       <div className="flex-1 flex flex-col overflow-hidden">
-        <Navbar userEmail={userEmail} />
+        <Navbar userEmail={userEmail} setTheme={setTheme} />
 
-        <main className="flex-1 overflow-y-auto p-6 bg-[#0f172a]">
-          <div className="max-w-7xl mx-auto space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {stats.map((stat, i) => {
-                const Icon = stat.icon;
-                return (
-                  <div
-                    key={i}
-                    className="bg-[#1e293b] border border-gray-700 p-6 rounded-2xl shadow-md hover:-translate-y-1 hover:shadow-lg transition-all"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-gray-400">{stat.label}</p>
-                        <h2 className="text-2xl font-semibold mt-1">{stat.value}</h2>
-                      </div>
-                      <div className="p-3 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl">
-                        <Icon size={22} />
-                      </div>
-                    </div>
-                    <div className="mt-3 flex items-center gap-2">
-                      {stat.positive ? (
-                        <TrendingUp size={16} className="text-green-500" />
-                      ) : (
-                        <TrendingDown size={16} className="text-red-500" />
-                      )}
-                      <p className={`text-sm font-semibold ${stat.positive ? "text-green-500" : "text-red-500"}`}>
-                        {stat.change}
-                      </p>
-                      <span className="text-sm text-gray-400">vs last month</span>
-                    </div>
-                  </div>
-                );
-              })}
+        <main className="flex-1 overflow-y-auto p-8 bg-base-100">
+          {/* Dashboard asosiy overview */}
+          {location.pathname === "/dashboard" && (
+            <div className="mb-6">
+              <h1 className="text-3xl md:text-4xl font-bold text-primary mb-1">
+                Welcome back!
+              </h1>
+              <p className="text-base-content/70 text-sm md:text-base">
+                Hello <span className="font-medium text-primary">{user?.telegram || "Guest"}</span>, here is your dashboard overview.
+              </p>
             </div>
+          )}
 
-            <div className="bg-[#1e293b] border border-gray-700 rounded-2xl p-8 text-center">
-              <p className="text-gray-400 text-sm">📊 Chart component will appear here</p>
-            </div>
-          </div>
+          {/* Child routes render qilinadi */}
+          <Outlet />
         </main>
+
       </div>
     </div>
   );
