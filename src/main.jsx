@@ -23,6 +23,7 @@ import Analystic from "./pages/Analystic.jsx";
 import Documents from "./pages/Documents.jsx";
 import Settings from "./pages/Settings.jsx";
 import ErrorPage from "./pages/ErrorPage.jsx";
+import SupportChat from "./pages/SupportChat.jsx";
 
 // 🔹 Protected Route
 const ProtectedRoute = ({ children }) => {
@@ -41,8 +42,8 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
-      { index: true, element: <Navigate to="dashboard" replace /> }, 
-      { path: "dashboard", element: <div></div> }, 
+      { index: true, element: <Navigate to="dashboard" replace /> },
+      { path: "dashboard", element: <div></div> },
       { path: "seeUsers", element: <SeeUsers /> },
       { path: "addproduct", element: <AddProduct /> },
       { path: "banneradd", element: <Banneradd /> },
@@ -50,6 +51,11 @@ const router = createBrowserRouter([
       { path: "documents", element: <Documents /> },
       { path: "settings", element: <Settings /> },
     ],
+  },
+  {
+    path: "tex-podderjka", element: <ProtectedRoute>
+      <SupportChat />
+    </ProtectedRoute>
   },
   { path: "/login", element: <LoginPage /> },
   { path: "/register", element: <Register /> },

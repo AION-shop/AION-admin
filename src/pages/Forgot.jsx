@@ -36,7 +36,7 @@
       setLoadingSend(true);
       toast.loading("Kod yuborilmoqda...", { duration: 2000 });
       try {
-        const res = await fetch("http://localhost:5000/api/auth/send-code", {
+        const res = await fetch("http://localhost:8000/api/auth/send-code", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ telegram: username }),

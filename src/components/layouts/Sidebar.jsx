@@ -7,6 +7,7 @@ import {
   BarChart3,
   ChevronLeft,
   ChevronRight,
+  MessageCircleMoreIcon,
   LogOut,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
@@ -26,6 +27,7 @@ export default function Sidebar({
     { name: "Users", icon: Users, path: "/seeusers", badge: null },
     { name: "Add Product", icon: PlusSquare, path: "/addproduct", badge: null },
     { name: "Add Banner", icon: ImagePlus, path: "/banneradd", badge: null },
+    { name: "Support Chat", icon: MessageCircleMoreIcon, path: "/tex-podderjka", badge: null },
     { name: "Settings", icon: Settings, path: "/settings", badge: null },
   ];
 
