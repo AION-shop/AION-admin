@@ -1,86 +1,118 @@
 import React, { useState } from "react";
-import toast, { Toaster } from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { CheckCircle, ArrowLeft, Lock } from "lucide-react";
+import { Toaster, toast } from "react-hot-toast";
+import axios from "axios";
 
-const VerifyCode = ({ username }) => {
+const VerifyCode = ({ username, onBack }) => {
   const [code, setCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate(); // ← redirect uchun
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleVerify = async () => {
     toast.dismiss();
-
     if (!username || !code || !newPassword) {
-      toast.error("Barcha maydonlarni to‘ldiring!");
+      toast.error("Barcha maydonlarni to'ldiring!");
+      return;
+    }
+    if (newPassword.length < 6) {
+      toast.error("Parol kamida 6 ta belgidan iborat bo'lishi kerak!");
       return;
     }
 
     setLoading(true);
-    toast.loading("Tekshirilmoqda...");
-
     try {
-      const res = await fetch("http://localhost:8000/api/auth/verify-code", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ telegram: username, code, newPassword }),
+      const res = await axios.post("http://localhost:5000/api/auth/forgot/verify", {
+        telegram: username,
+        code,
+        newPassword,
       });
 
-      const data = await res.json();
-      toast.dismiss();
-
-      if (res.ok && data.success) {
-        toast.success(data.message);
-
-        // ✅ 1.5 sekunddan keyin login sahifasiga yo‘naltirish
-        setTimeout(() => {
-          navigate("/login");
-        }, 1500);
+      if (res.data.success) {
+        toast.success("Parol muvaffaqiyatli o'zgartirildi!");
+        setTimeout(() => (window.location.href = "/login"), 1500);
       } else {
-        toast.error(data.message);
+        toast.error(res.data.message || "Kod noto‘g‘ri yoki xato!");
       }
     } catch (err) {
-      toast.dismiss();
-      toast.error("Server bilan aloqa yo‘q!");
+      console.error(err);
+      toast.error(err.response?.data?.message || "Serverda xato yuz berdi!");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="bg-gray-800 shadow-md p-6 rounded-xl w-full max-w-md mx-auto mt-20">
-      <Toaster position="top-center" reverseOrder={false} />
-      <h2 className="text-2xl font-semibold text-center mb-4 text-white">Verify Code</h2>
+    <div className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 shadow-2xl p-8 rounded-3xl w-full max-w-md border border-slate-700/50 backdrop-blur-sm">
+      <Toaster position="top-center" />
 
-      <label className="text-sm text-gray-300 mb-1 block">Tasdiqlash kodi</label>
-      <input
-        type="text"
-        value={code}
-        onChange={(e) => setCode(e.target.value)}
-        placeholder="123456"
-        className="w-full border p-2 rounded-md mb-3 bg-gray-700 text-white placeholder-gray-400"
-      />
+      <button
+        onClick={onBack}
+        className="absolute -top-2 -left-2 p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-all duration-300 border border-slate-700"
+      >
+        <ArrowLeft className="w-5 h-5" />
+      </button>
 
-      <label className="text-sm text-gray-300 mb-1 block">Yangi parol</label>
-      <input
-        type="password"
-        value={newPassword}
-        onChange={(e) => setNewPassword(e.target.value)}
-        placeholder="Yangi parol"
-        className="w-full border p-2 rounded-md mb-3 bg-gray-700 text-white placeholder-gray-400"
-      />
+      <div className="flex items-center justify-center mb-6 mt-6">
+        <div className="bg-gradient-to-br from-green-500 to-blue-600 p-3 rounded-2xl shadow-lg">
+          <CheckCircle className="w-8 h-8 text-white" />
+        </div>
+      </div>
+
+      <h2 className="text-3xl font-bold text-center mb-2 bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
+        Kodni tasdiqlang
+      </h2>
+      <p className="text-center text-slate-400 text-sm mb-2">
+        <span className="text-blue-400 font-medium">{username}</span> ga yuborildi
+      </p>
+
+      <div className="mb-5">
+        <label className="text-sm font-medium text-slate-300 mb-2 block flex items-center gap-2">
+          Tasdiqlash kodi
+        </label>
+        <input
+          type="text"
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
+          placeholder="123456"
+          className="w-full border-2 border-slate-700 focus:border-green-500 p-3.5 rounded-xl bg-slate-800/50 text-white placeholder-slate-500 text-center text-2xl font-mono tracking-widest outline-none transition-all duration-300"
+          maxLength={6}
+        />
+      </div>
+
+      <div className="mb-6">
+        <label className="text-sm font-medium text-slate-300 mb-2 block flex items-center gap-2">
+          Yangi parol
+        </label>
+        <div className="relative">
+          <input
+            type={showPassword ? "text" : "password"}
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            placeholder="Kamida 6 ta belgi"
+            className="w-full border-2 border-slate-700 focus:border-blue-500 p-3.5 pr-12 rounded-xl bg-slate-800/50 text-white placeholder-slate-500 transition-all duration-300 outline-none"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
+          >
+            {showPassword ? "👁️" : "👁️‍🗨️"}
+          </button>
+        </div>
+      </div>
 
       <button
         onClick={handleVerify}
         disabled={loading}
-        className={`w-full ${loading ? "opacity-70 cursor-wait" : "hover:bg-green-700"} bg-green-600 text-white p-2 rounded-md`}
+        className={`w-full font-semibold p-4 rounded-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg ${
+          loading
+            ? "bg-slate-700 text-slate-400 cursor-wait"
+            : "bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white shadow-green-500/25"
+        }`}
       >
-        {loading ? "Tekshirilmoqda..." : "Verify & Reset Password"}
+        {loading ? "Tekshirilmoqda..." : "Tasdiqlash va parolni o'zgartirish"}
       </button>
-
-      <p className="text-center text-sm text-gray-400 mt-3">
-        Kodni olganingizdan so‘ng, yangi parol bilan <span className="text-blue-400 underline cursor-pointer" onClick={() => navigate("/login")}>login</span> qilishingiz mumkin.
-      </p>
     </div>
   );
 };

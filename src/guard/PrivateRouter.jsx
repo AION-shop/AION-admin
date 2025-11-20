@@ -8,7 +8,7 @@ const PrivateRouter = ({ children }) => {
 
   if (!isAuth) {
     // Agar tizimga kirmagan bo‘lsa → /login sahifasiga yo‘naltiramiz
-    return <Navigate to="/login" replace state={{ from: location }} />;
+    return <Navigate to="/register" replace state={{ from: location }} />;
   }
 
   return children;

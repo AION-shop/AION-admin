@@ -1,12 +1,6 @@
 import React, { useEffect, useState } from "react";
-import {
-  Users,
-  Loader2,
-  CalendarDays,
-  RefreshCw,
-  Search,
-  UserCircle,
-} from "lucide-react";
+import { Users, Loader2, CalendarDays, RefreshCw, Search, UserCircle } from "lucide-react";
+import axios from "axios";
 
 const SeeUsers = () => {
   const [users, setUsers] = useState([]);
@@ -17,14 +11,27 @@ const SeeUsers = () => {
   // 🧠 Foydalanuvchilarni olish
   const fetchUsers = async () => {
     try {
+      setLoading(true);
       setRefreshing(true);
-      const res = await fetch("http://localhost:8000/api/auth/users");
-      const data = await res.json();
 
-      if (data.success) setUsers(data.users || []);
-      else console.error("Xato:", data.message);
+      // 1️⃣ Client foydalanuvchilar
+      const clientRes = await axios.get("http://localhost:5000/api/userClient"); // frontend: client
+      const clients = clientRes.data?.users || [];
+
+      // 2️⃣ Admin foydalanuvchilar
+      const adminRes = await axios.get("http://localhost:5000/api/auth/users", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token") || ""}`, // admin token
+        },
+      });
+      const admins = adminRes.data?.users || [];
+
+      // 3️⃣ Hammasini birlashtirish
+      const allUsers = [...admins, ...clients];
+      setUsers(allUsers);
     } catch (err) {
       console.error("Server bilan bog‘lanishda xato:", err);
+      setUsers([]);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -78,10 +85,7 @@ const SeeUsers = () => {
             disabled={refreshing}
             className="btn btn-sm btn-primary gap-2"
           >
-            <RefreshCw
-              size={16}
-              className={refreshing ? "animate-spin" : ""}
-            />
+            <RefreshCw size={16} className={refreshing ? "animate-spin" : ""} />
             Yangilash
           </button>
         </div>
@@ -89,10 +93,7 @@ const SeeUsers = () => {
         {/* Qidiruv */}
         <div className="bg-base-100 rounded-xl p-4 shadow-sm mb-6 border border-base-300">
           <div className="relative">
-            <Search
-              className="absolute left-4 top-1/2 -translate-y-1/2 opacity-50"
-              size={18}
-            />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 opacity-50" size={18} />
             <input
               type="text"
               placeholder="Telegram yoki Chat ID bo‘yicha qidirish..."
@@ -133,24 +134,19 @@ const SeeUsers = () => {
                       Ro‘yhatdan o‘tgan
                     </div>
                   </th>
+                  <th>Rol</th>
                 </tr>
               </thead>
               <tbody>
                 {filtered.map((u, i) => (
-                  <tr
-                    key={u._id}
-                    className="hover:bg-base-200/60 transition-colors duration-200"
-                  >
+                  <tr key={u._id || u.id} className="hover:bg-base-200/60 transition-colors duration-200">
                     <td>{i + 1}</td>
-                    <td className="font-medium text-primary">
-                      {u.telegram || "—"}
-                    </td>
+                    <td className="font-medium text-primary">{u.telegram || "—"}</td>
                     <td>
-                      <span className="badge badge-outline badge-primary">
-                        {u.chatId}
-                      </span>
+                      <span className="badge badge-outline badge-primary">{u.chatId}</span>
                     </td>
                     <td className="text-sm opacity-70">{formatDate(u.createdAt)}</td>
+                    <td className="capitalize text-sm opacity-80">{u.role || "client"}</td>
                   </tr>
                 ))}
               </tbody>
@@ -159,14 +155,10 @@ const SeeUsers = () => {
             <div className="flex flex-col justify-center items-center py-20">
               <Users className="text-base-content opacity-30 mb-3" size={48} />
               <p className="text-lg font-medium">
-                {searchTerm
-                  ? "Natija topilmadi"
-                  : "Foydalanuvchilar hali yo‘q"}
+                {searchTerm ? "Natija topilmadi" : "Foydalanuvchilar hali yo‘q"}
               </p>
               <p className="text-sm opacity-60">
-                {searchTerm
-                  ? "Boshqa so‘z bilan urinib ko‘ring."
-                  : "Yangi foydalanuvchilar ro‘yxatdan o‘tishini kuting."}
+                {searchTerm ? "Boshqa so‘z bilan urinib ko‘ring." : "Yangi foydalanuvchilar ro‘yxatdan o‘tishini kuting."}
               </p>
             </div>
           )}
