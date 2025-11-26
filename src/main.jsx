@@ -1,3 +1,4 @@
+// main.jsx
 import React, { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
@@ -14,14 +15,14 @@ import { HelmetProvider } from "react-helmet-async";
 // Router
 import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
 
-// Sahifalar
+// Pages
 import LoginPage from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import ForgotFlow from "./pages/ForgotFlow.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import SeeUsers from "./pages/Seeusers.jsx";
 import AddProduct from "./pages/AddProduct.jsx";
-import AddColproduct from "./pages/AddColproduct.jsx";   // ⭐ Yangi sahifa
+import AddColproduct from "./pages/AddColproduct.jsx";
 import Banneradd from "./pages/banneradd.jsx";
 import Analystic from "./pages/Analystic.jsx";
 import Documents from "./pages/Documents.jsx";
@@ -29,15 +30,20 @@ import Settings from "./pages/Settings.jsx";
 import ErrorPage from "./pages/ErrorPage.jsx";
 import SupportChat from "./pages/SupportChat.jsx";
 import AddDiscount from "./pages/AddDiscount.jsx";
+import VerifyCodePage from "./pages/VerifyCode.jsx";
 
-// 🔐 Protected Route
+// -------------------------
+// Protected Route Component
+// -------------------------
 const ProtectedRoute = ({ children }) => {
   const user = useSelector((state) => state.user.user);
   if (!user) return <Navigate to="/login" replace />;
   return children;
 };
 
-// 🌐 Router config
+// -------------------------
+// Router Config
+// -------------------------
 const router = createBrowserRouter([
   {
     path: "/",
@@ -51,18 +57,13 @@ const router = createBrowserRouter([
       { path: "dashboard", element: <div></div> },
       { path: "seeusers", element: <SeeUsers /> },
       { path: "addproduct", element: <AddProduct /> },
-      {path: "adddiscount", element: <AddDiscount />},
-
-      // ❌ BU YO‘LDA XATO BOR EDI – olib tashlandi
-      // { path : "/addproduct" }
-
-      // ⭐ Yangi Col Product sahifa ROUTE
+      { path: "adddiscount", element: <AddDiscount /> },
       { path: "add-colproduct", element: <AddColproduct /> },
-
       { path: "banneradd", element: <Banneradd /> },
       { path: "analystic", element: <Analystic /> },
       { path: "documents", element: <Documents /> },
       { path: "settings", element: <Settings /> },
+     
     ],
   },
 
@@ -76,16 +77,19 @@ const router = createBrowserRouter([
     ),
   },
 
-  // Auth pages
+  // Auth Pages
   { path: "/login", element: <LoginPage /> },
   { path: "/register", element: <Register /> },
   { path: "/forgot", element: <ForgotFlow /> },
+   { path: "verify-code", element: <VerifyCodePage /> },
 
-  // 404
+  // 404 Page
   { path: "*", element: <ErrorPage /> },
 ]);
 
-// 🚀 Render
+// -------------------------
+// Render App
+// -------------------------
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Provider store={store}>
