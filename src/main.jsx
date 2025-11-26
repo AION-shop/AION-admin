@@ -28,6 +28,7 @@ import Documents from "./pages/Documents.jsx";
 import Settings from "./pages/Settings.jsx";
 import ErrorPage from "./pages/ErrorPage.jsx";
 import SupportChat from "./pages/SupportChat.jsx";
+import AddDiscount from "./pages/AddDiscount.jsx";
 
 // 🔐 Protected Route
 const ProtectedRoute = ({ children }) => {
@@ -50,6 +51,7 @@ const router = createBrowserRouter([
       { path: "dashboard", element: <div></div> },
       { path: "seeusers", element: <SeeUsers /> },
       { path: "addproduct", element: <AddProduct /> },
+      {path: "adddiscount", element: <AddDiscount />},
 
       // ❌ BU YO‘LDA XATO BOR EDI – olib tashlandi
       // { path : "/addproduct" }

@@ -1,13 +1,9 @@
 // Products.jsx
 import React, { useState, useEffect } from "react";
-import { Plus, X, Image as ImgIcon, Battery, BarChart2, Trash2 } from "lucide-react";
+import { Plus, X, Image as ImgIcon, BarChart2, Trash2 } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 
-/**
- * Products page + AddProductModal (admin)
- * DELETE qo‘shilgan (modal + api)
- */
-
+/** INPUT COMPONENTS */
 const InputField = ({ label, name, value, onChange, type = "text", placeholder }) => (
   <div>
     <label className="label">
@@ -39,6 +35,7 @@ const TextAreaField = ({ label, name, value, onChange, placeholder }) => (
   </div>
 );
 
+/** ADD PRODUCT MODAL */
 function AddProductModal({ isOpen, onClose, onAdd }) {
   const [form, setForm] = useState({
     title: "",
@@ -52,7 +49,6 @@ function AddProductModal({ isOpen, onClose, onAdd }) {
     power: "",
     reviewsCount: "",
   });
-
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState(null);
 
@@ -129,10 +125,8 @@ function AddProductModal({ isOpen, onClose, onAdd }) {
         body: JSON.stringify(payload),
       });
       const data = await res.json();
-
       if (res.ok) {
-        const newProduct = data.product || data;
-        onAdd(newProduct);
+        onAdd(data.product || data);
         showToast("success", "Product muvaffaqiyatli qo'shildi.");
         onClose();
       } else {
@@ -150,8 +144,6 @@ function AddProductModal({ isOpen, onClose, onAdd }) {
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50 p-4">
       <div className="bg-base-100 rounded-2xl w-full max-w-3xl shadow-xl relative flex flex-col">
-
-        {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-base-300">
           <h2 className="text-xl md:text-2xl font-bold text-base-content flex items-center gap-2">
             <Plus size={20} className="text-primary" /> Yangi Product Qo‘shish
@@ -161,7 +153,6 @@ function AddProductModal({ isOpen, onClose, onAdd }) {
           </button>
         </div>
 
-        {/* Body */}
         <div className="p-5 space-y-4 max-h-[70vh] overflow-y-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <InputField label="Title *" name="title" value={form.title} onChange={handleChange} placeholder="Tesla Model S" />
@@ -188,7 +179,6 @@ function AddProductModal({ isOpen, onClose, onAdd }) {
           <InputField label="Reviews Count" name="reviewsCount" value={form.reviewsCount} onChange={handleChange} type="number" placeholder="120" />
         </div>
 
-        {/* Footer */}
         <div className="p-5 border-t flex gap-3">
           <button onClick={onClose} className="btn btn-ghost flex-1">Bekor qilish</button>
           <button onClick={handleSubmit} disabled={loading} className="btn btn-primary flex-1 gap-2">
@@ -197,11 +187,7 @@ function AddProductModal({ isOpen, onClose, onAdd }) {
         </div>
 
         {toast && (
-          <div
-            className={`absolute right-4 bottom-4 p-3 rounded-lg shadow-lg ${
-              toast.type === "success" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-            }`}
-          >
+          <div className={`absolute right-4 bottom-4 p-3 rounded-lg shadow-lg ${toast.type === "success" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
             {toast.message}
           </div>
         )}
@@ -210,30 +196,24 @@ function AddProductModal({ isOpen, onClose, onAdd }) {
   );
 }
 
-
-
-
-
-// ================================================
-// MAIN PRODUCTS PAGE
-// ================================================
+/** MAIN PRODUCTS PAGE */
 export default function Products() {
   const [modalOpen, setModalOpen] = useState(false);
   const [products, setProducts] = useState([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [pageToast, setPageToast] = useState(null);
-
   const [deleteModal, setDeleteModal] = useState({ open: false, id: null });
   const [deleting, setDeleting] = useState(false);
+
+  const API_URL = "http://localhost:5000/api/products";
 
   // Get all products
   useEffect(() => {
     const fetchProducts = async () => {
       setLoadingProducts(true);
       try {
-        const res = await fetch("http://localhost:5000/api/products");
+        const res = await fetch(API_URL);
         const data = await res.json();
-
         if (res.ok) setProducts(data.products || data);
       } catch (err) {
         setPageToast({ type: "error", message: "Mahsulotlarni yuklashda xatolik." });
@@ -252,15 +232,10 @@ export default function Products() {
 
   const handleDeleteProduct = async () => {
     if (!deleteModal.id) return;
-
     setDeleting(true);
     try {
-      const res = await fetch(`http://localhost:5000/api/products/${deleteModal.id}`, {
-        method: "DELETE",
-      });
-
+      const res = await fetch(`${API_URL}/${deleteModal.id}`, { method: "DELETE" });
       const data = await res.json();
-
       if (res.ok) {
         setProducts((prev) => prev.filter((p) => p._id !== deleteModal.id));
         setPageToast({ type: "success", message: "Product o‘chirildi." });
@@ -278,12 +253,11 @@ export default function Products() {
   return (
     <div className="min-h-screen bg-base-200 p-6">
       <Helmet>
-        <title>Admin — Productlar</title>
-        <meta name="description" content="Admin panel: Product qo‘shish, o‘chirish, boshqarish" />
+        <title>Admin — Products</title>
+        <meta name="description" content="Admin panel: Products qo‘shish, o‘chirish, boshqarish" />
       </Helmet>
 
       <div className="max-w-7xl mx-auto">
-
         {/* HEADER */}
         <div className="bg-base-100 rounded-2xl p-6 mb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
@@ -291,8 +265,8 @@ export default function Products() {
               <ImgIcon className="text-primary" size={28} />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-primary">Productlar</h1>
-              <p className="text-sm opacity-80">Admin panel — mahsulotlar ro‘yxati</p>
+              <h1 className="text-3xl font-bold text-primary">Products</h1>
+              <p className="text-sm opacity-80">Admin panel — Products ro‘yxati</p>
               <p className="text-sm opacity-70 mt-1">
                 Jami: <span className="font-semibold">{products.length}</span>
               </p>
@@ -306,13 +280,7 @@ export default function Products() {
 
         {/* PAGE TOAST */}
         {pageToast && (
-          <div
-            className={`mb-4 p-3 rounded-lg shadow ${
-              pageToast.type === "success"
-                ? "bg-green-50 text-green-800"
-                : "bg-red-50 text-red-800"
-            }`}
-          >
+          <div className={`mb-4 p-3 rounded-lg shadow ${pageToast.type === "success" ? "bg-green-50 text-green-800" : "bg-red-50 text-red-800"}`}>
             {pageToast.message}
           </div>
         )}
@@ -354,7 +322,6 @@ export default function Products() {
                   </div>
                 </div>
 
-                {/* DELETE BUTTON */}
                 <button
                   onClick={() => setDeleteModal({ open: true, id: p._id })}
                   className="btn btn-error btn-sm w-full mt-4 gap-2"
@@ -366,7 +333,6 @@ export default function Products() {
           </div>
         )}
 
-        {/* ADD MODAL */}
         <AddProductModal isOpen={modalOpen} onClose={() => setModalOpen(false)} onAdd={handleAddProduct} />
 
         {/* DELETE CONFIRM MODAL */}
@@ -395,7 +361,6 @@ export default function Products() {
             </div>
           </div>
         )}
-
       </div>
     </div>
   );
