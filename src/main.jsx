@@ -31,8 +31,8 @@ import ErrorPage from "./pages/ErrorPage.jsx";
 import SupportChat from "./pages/SupportChat.jsx";
 import AddDiscount from "./pages/AddDiscount.jsx";
 import VerifyCodePage from "./pages/VerifyCode.jsx";
-
-// -------------------------
+import Sellers from "./pages/Sellers.jsx";
+// ---------------------
 // Protected Route Component
 // -------------------------
 const ProtectedRoute = ({ children }) => {
@@ -63,6 +63,7 @@ const router = createBrowserRouter([
       { path: "analystic", element: <Analystic /> },
       { path: "documents", element: <Documents /> },
       { path: "settings", element: <Settings /> },
+      {path : "seller" , element: <Sellers/>}
      
     ],
   },

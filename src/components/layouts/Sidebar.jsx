@@ -42,6 +42,7 @@ export default function Sidebar({
     { name: "Add Discount Card", icon: PlusSquare, path: "/adddiscount" }, // <-- Yangi qo‘shilgan
     { name: "Support Chat", icon: MessageCircleMoreIcon, path: "/tex-podderjka" },
     { name: "Settings", icon: Settings, path: "/settings" },
+        { name: "Seller", icon: Settings, path: "/seller" },
   ];
 
   const handleLogout = () => navigate("/register");
