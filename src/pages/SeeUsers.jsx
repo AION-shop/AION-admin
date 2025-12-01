@@ -9,7 +9,7 @@ const SeeUsers = () => {
   const [refreshing, setRefreshing] = useState(false);
 
   // 🧠 Foydalanuvchilarni olish
-  const fetchUsers = async () => {  
+  const fetchUsers = async () => {
     try {
       setLoading(true);
       setRefreshing(true);

@@ -1,4 +1,3 @@
-// main.jsx
 import React, { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
@@ -9,8 +8,7 @@ import { Provider, useSelector } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { store, persistor } from "./redux/store.js";
 
-// // Helmet
-// import { HelmetProvider } from "react-helmet-async";
+import { HelmetProvider } from "react-helmet-async";
 
 // Router
 import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
@@ -20,7 +18,7 @@ import LoginPage from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import ForgotFlow from "./pages/ForgotFlow.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
-import SeeUsers from "./pages/SeeUsers.jsx"; //togirlandi
+import SeeUsers from "./pages/SeeUsers.jsx"; 
 import AddProduct from "./pages/AddProduct.jsx";
 import AddColproduct from "./pages/AddColproduct.jsx";
 import Banneradd from "./pages/banneradd.jsx";
@@ -32,18 +30,15 @@ import SupportChat from "./pages/SupportChat.jsx";
 import AddDiscount from "./pages/AddDiscount.jsx";
 import VerifyCodePage from "./pages/VerifyCode.jsx";
 import Sellers from "./pages/Sellers.jsx";
-// ---------------------
-// Protected Route Component
-// -------------------------
+
+// Protected Route
 const ProtectedRoute = ({ children }) => {
   const user = useSelector((state) => state.user.user);
   if (!user) return <Navigate to="/login" replace />;
   return children;
 };
 
-// -------------------------
 // Router Config
-// -------------------------
 const router = createBrowserRouter([
   {
     path: "/",
@@ -55,7 +50,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Navigate to="dashboard" replace /> },
       { path: "dashboard", element: <div></div> },
-      { path: "seeusers", element: <SeeUsers /> },
+      { path: "SeeUsers", element: <SeeUsers /> },
       { path: "addproduct", element: <AddProduct /> },
       { path: "adddiscount", element: <AddDiscount /> },
       { path: "add-colproduct", element: <AddColproduct /> },
@@ -63,41 +58,24 @@ const router = createBrowserRouter([
       { path: "analystic", element: <Analystic /> },
       { path: "documents", element: <Documents /> },
       { path: "settings", element: <Settings /> },
-      {path : "seller" , element: <Sellers/>}
-     
+      { path: "seller", element: <Sellers /> }
     ],
   },
-
-  // Support Chat
-  {
-    path: "tex-podderjka",
-    element: (
-      <ProtectedRoute>
-        <SupportChat />
-      </ProtectedRoute>
-    ),
-  },
-
-  // Auth Pages
+  { path: "tex-podderjka", element: <ProtectedRoute><SupportChat /></ProtectedRoute> },
   { path: "/login", element: <LoginPage /> },
   { path: "/register", element: <Register /> },
   { path: "/forgot", element: <ForgotFlow /> },
-   { path: "verify-code", element: <VerifyCodePage /> },
-
-  // 404 Page
+  { path: "verify-code", element: <VerifyCodePage /> },
   { path: "*", element: <ErrorPage /> },
 ]);
 
-// -------------------------
 // Render App
-// -------------------------
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <HelmetProvider>
           <RouterProvider router={router} />
-
           <Toaster
             position="top-right"
             reverseOrder={false}
