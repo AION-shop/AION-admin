@@ -9,8 +9,8 @@ import { Provider, useSelector } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { store, persistor } from "./redux/store.js";
 
-// Helmet
-import { HelmetProvider } from "react-helmet-async";
+// // Helmet
+// import { HelmetProvider } from "react-helmet-async";
 
 // Router
 import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
