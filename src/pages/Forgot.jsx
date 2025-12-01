@@ -36,6 +36,7 @@ const Forgot = ({ onCodeSent }) => {
 
       if (res.data.success) {
         toast.success("Kod yuborildi ✅");
+        setLoading(true)
         setTimer(60);
         onCodeSent(username);
       } else {
