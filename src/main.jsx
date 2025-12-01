@@ -20,7 +20,7 @@ import LoginPage from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import ForgotFlow from "./pages/ForgotFlow.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
-import SeeUsers from "./pages/SeeUsers.jsx";
+import SeeUsers from "./pages/SeeUsers.jsx"; //togirlandi
 import AddProduct from "./pages/AddProduct.jsx";
 import AddColproduct from "./pages/AddColproduct.jsx";
 import Banneradd from "./pages/banneradd.jsx";
